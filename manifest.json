@@ -1,0 +1,17 @@
+{
+   "name": "Social Media Minimalist",
+   "version": "0.0.1",
+   "manifest_version": 3,
+   "content_scripts": [
+      {
+         "all_frames": true,
+         "run_at": "document_idle",
+         "matches": [
+            "<all_urls>"
+         ],
+         "js": [
+            "index.js"
+         ]
+      }
+   ]
+}
