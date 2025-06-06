@@ -20,9 +20,8 @@ window.fetch = async (...args) => {
         }); 
       }
     });
-
-    console.log("Subscriptions loaded:", subscriptedChannels);
   }
+
   return response;
 };
 
@@ -49,6 +48,43 @@ var observeDOM = (function () {
    }
 })();
 
+hideAdvertisementVideo = (video) => {
+      const ads = video.querySelector("ytd-ad-slot-renderer");
+      if (!ads)
+         return false;
+
+      if (video.style.display != 'none')
+         video.style.display = 'none';
+
+      return true;
+}
+
+hideShortsVideo = (video) => {
+   const gridSlimMedia = video.querySelector("ytd-rich-grid-slim-media");
+
+   if (gridSlimMedia && gridSlimMedia.hasAttribute("is-short"))
+   {
+      if (video.style.display != 'none')
+         video.style.display = 'none';
+      return true;
+   }
+
+   return false;
+}
+
+hideMixVideos = (video) => {
+   const mix = video.querySelector(".yt-lockup-view-model-wiz");
+
+   if (mix)
+   {
+      if (video.style.display != 'none')
+         video.style.display = 'none';
+      return true;
+   }
+
+   return false;
+}
+
 function process() {
    hideYTShorts();
    const allowedChannels = subscriptedChannels;
@@ -56,35 +92,23 @@ function process() {
    const videos = document.querySelectorAll("ytd-rich-item-renderer");
 
    videos.forEach(video => {
-      const ads = video.querySelector("ytd-ad-slot-renderer");
-      if (ads)
-      {
-         if (video.style.display != 'none')
-            video.style.display = 'none';
+      if (hideAdvertisementVideo(video))
          return;
-      }
 
-      const gridSlimMedia = video.querySelector("ytd-rich-grid-slim-media");
-
-      if (gridSlimMedia && gridSlimMedia.hasAttribute("is-short"))
-      {
-         if (video.style.display != 'none')
-            video.style.display = 'none';
+      if (hideShortsVideo(video))
          return;
-      }
+
+      if (hideMixVideos(video))
+         return;
 
       const title = video.querySelector("yt-formatted-string#video-title");
 
       if (!title)
-      {
-         // console.log(video);
          return;
-      }
 
       const channelNameElement = video.querySelector("yt-formatted-string.ytd-channel-name a");
 
       const channelName = channelNameElement ? channelNameElement.textContent : "";
-
 
       if (allowedChannels.indexOf(channelName) < 0)
       {
@@ -117,5 +141,4 @@ var observer = new MutationObserver(function (mutations, observer) {
 observer.observe(document, {
    subtree: true,
    childList: true
-   //attributes: true
 });
